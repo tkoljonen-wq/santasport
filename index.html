@@ -1,0 +1,2918 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NÄKÖHAVAINTOJEN ITSEARVIOINTI URHEILUTILANTEISSA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F4F3F0;
+      --surface: #FFFFFF;
+      --text: #111111;
+      --text-dim: #222222;
+      --accent: #9a5ea3;
+      --accent-hover: #7d4a87;
+      --correct: #188A52;
+      --wrong: #C93333;
+      --border: #D8D4CD;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06), 0 10px 28px rgba(0,0,0,0.06);
+      --bar-red: #e20000;
+      --bar-green: #009d00;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      overflow-y: auto;
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.97);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 46px 50px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+
+    .card h1 {
+      font-size: 46px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .card .subtitle {
+      font-size: 31px;
+      color: var(--text-dim);
+      line-height: 1.45;
+      margin-bottom: 34px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .field { margin-bottom: 28px; }
+
+    .field label {
+      display: block;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      margin-bottom: 10px;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 18px 20px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 29px;
+      font-weight: 700;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: #FAFAF8;
+      color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      -webkit-appearance: none;
+      text-transform: uppercase;
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M1 1l7 7 7-7' stroke='%23555555' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 18px center;
+      padding-right: 46px;
+    }
+
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(154,94,163,0.12);
+    }
+
+    .field .hint {
+      font-size: 22px;
+      color: #3A3A3A;
+      margin-top: 8px;
+      line-height: 1.35;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      display: block;
+      width: 100%;
+      padding: 24px 30px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.2;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s, transform 0.1s;
+      box-shadow: 0 4px 14px rgba(154,94,163,0.16);
+      text-transform: uppercase;
+    }
+
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:active { transform: scale(0.985); }
+
+    .btn-secondary {
+      display: inline-block;
+      padding: 18px 38px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      text-transform: uppercase;
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg);
+      border-color: var(--accent);
+    }
+
+    .cal-error {
+      color: var(--wrong);
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 12px;
+      min-height: 30px;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .progress-wrap {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 8px;
+      background: #DAD6D0;
+      z-index: 100;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    .step-tag {
+      display: inline-block;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(154,94,163,0.10);
+      padding: 10px 18px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .cal-line-200 {
+      position: absolute;
+      z-index: 50;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 3px;
+      background: #1A1A1A;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .top-bar-btn {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      text-transform: uppercase;
+    }
+
+    .top-bar-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+
+
+    /* TARKKUUSHAVAINTOTEHTÄVÄN OHJESIVUT */
+    #instructScreen .card {
+      width: 80vw;
+      max-width: 80vw;
+    }
+
+    #instructText {
+      font-size: 47px;
+      line-height: 1.45;
+    }
+
+
+    /* NÄKÖHAVAINTOTEHTÄVÄN OHJESIVU */
+    #fdInstructScreen .card {
+      width: 80vw;
+      max-width: 80vw;
+    }
+
+    #fdInstructScreen .subtitle {
+      font-size: 47px;
+      line-height: 1.45;
+    }
+
+    /* LANDOLT TEST */
+    #testScreen {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      background: #fff;
+      padding-top: 0;
+    }
+
+    #genderScreen .cal-line-200,
+    #ageScreen .cal-line-200 {
+      top: 16px;
+    }
+
+    .optotype-area {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      position: relative;
+    }
+
+    .optotype-container { transition: opacity 0.15s ease, transform 0.15s ease; }
+    .optotype-container.flash-correct { filter: drop-shadow(0 0 28px rgba(24,138,82,0.42)); }
+    .optotype-container.flash-wrong { filter: drop-shadow(0 0 28px rgba(201,51,51,0.42)); }
+    .optotype-container.entering { opacity: 0; transform: scale(0.92); }
+
+    .controls-bar {
+      width: 100%;
+      padding: 18px 24px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      background: #F4F3F0;
+      border-top: 1.5px solid var(--border);
+      position: relative;
+    }
+
+    .arrow-btn {
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .arrow-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .arrow-btn:active { transform: scale(0.93); }
+
+    .arrow-btn svg {
+      width: 48px;
+      height: 48px;
+      stroke: var(--text);
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .cant-see-btn {
+      margin-left: 24px;
+      padding: 33px 51px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 45px;
+      font-weight: 800;
+      color: var(--text);
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+      min-height: 132px;
+      text-transform: uppercase;
+    }
+
+    .cant-see-btn:hover {
+      background: #FEF0F0;
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .eye-label {
+      position: fixed;
+      top: 74px;
+      left: 18px;
+      transform: none;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent);
+      background: rgba(154,94,163,0.10);
+      padding: 15px 30px;
+      border-radius: 18px;
+      z-index: 20;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-transform: uppercase;
+    }
+
+    .key-hint {
+      width: 100%;
+      text-align: center;
+      font-size: 36px;
+      color: #2F2F2F;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      opacity: 0.88;
+      pointer-events: none;
+      padding: 8px 0 2px;
+      text-transform: uppercase;
+    }
+
+    /* FD SCREENS */
+
+    .underage-overlay {
+      position: fixed;
+      inset: 0;
+      background: #111111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      z-index: 200;
+    }
+
+    .underage-message {
+      font-size: 52px;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.2;
+      max-width: 800px;
+      margin-bottom: 50px;
+    }
+
+    .underage-back-btn {
+      max-width: 400px;
+      font-size: 30px !important;
+    }
+    #fdVertScreen, #fdHorizScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding: 0 18px 18px;
+    }
+
+    .fd-layout {
+      display: flex;
+      gap: 24px;
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .fd-layout-left {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .fd-layout-right {
+      flex: 1 1 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .fd-layout-right h2 {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .fd-layout-right p {
+      font-size: 31px;
+      color: var(--text-dim);
+      line-height: 1.45;
+      margin-bottom: 22px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .fd-stage {
+      width: 100%;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid var(--border);
+      min-height: 420px;
+    }
+
+    .fd-svg {
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      padding: 18px 20px;
+      margin-bottom: 11px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: left;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .option-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .option-btn:active { transform: scale(0.985); }
+
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: #e0d0e4;
+      font-weight: 800;
+    }
+
+    .option-btn.disabled-opt {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .fd-multi-hint {
+      margin-top: 6px;
+      margin-bottom: 10px;
+      padding-left: 22px;
+      font-size: 20px;
+      color: var(--text-dim);
+      line-height: 1.3;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .fd-confirm-btn {
+      display: none;
+      width: 100%;
+      padding: 19px 24px;
+      margin-top: 8px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-transform: uppercase;
+    }
+
+    .fd-confirm-btn:hover { background: var(--accent-hover); }
+    .fd-confirm-btn:active { transform: scale(0.985); }
+    .fd-confirm-btn.visible { display: block; }
+
+    /* FD VERT IMAGE BUTTONS */
+    .fd-img-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 14px;
+      border: 3px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.18s;
+      text-align: center;
+    }
+
+    .fd-img-btn:hover {
+      border-color: var(--accent);
+      background: #f0e8f2;
+      transform: scale(1.01);
+    }
+
+    .fd-img-btn:active {
+      transform: scale(0.98);
+    }
+
+    .fd-img-btn.selected {
+      border-color: var(--accent);
+      background: #e0d0e4;
+      box-shadow: 0 0 0 4px rgba(154,94,163,0.18);
+    }
+
+    .fd-img-btn img,
+    .fd-img-btn svg {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      pointer-events: none;
+    }
+
+    .fd-disappear-btn {
+      min-height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 18px;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.12;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .fd-disappear-btn span { pointer-events: none; }
+
+    /* FD VERT CUSTOM LAYOUT */
+    .fd-vert-layout {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      max-width: 1480px;
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+      padding: 14px 18px;
+      align-items: center;
+    }
+
+    .fd-vert-left {
+      flex: 1 1 55%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      gap: 0;
+    }
+
+    .fd-vert-instruction {
+      width: 100%;
+      font-size: 45px;
+      font-weight: 800;
+      color: var(--text);
+      text-transform: uppercase;
+      line-height: 1.35;
+      padding: 12px 16px;
+      background: rgba(244,243,240,0.92);
+      border-radius: 14px;
+      margin-bottom: 12px;
+    }
+
+    .fd-vert-left .fd-stage {
+      width: 100%;
+      min-height: 340px;
+    }
+
+    .fd-vert-right {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      min-width: 0;
+      width: 360px;
+      max-width: 360px;
+    }
+
+    .fd-vert-right .fd-img-btn {
+      padding: 8px;
+      margin-bottom: 0;
+    }
+
+    .fd-vert-right .fd-img-btn svg {
+      max-width: 160px;
+    }
+
+    @media (max-width: 860px) {
+      .fd-vert-layout {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .fd-vert-right {
+        flex-direction: row;
+        width: auto;
+        max-width: none;
+        justify-content: center;
+      }
+      .fd-vert-right .fd-img-btn {
+        flex: 1;
+        max-width: 180px;
+      }
+    }
+
+    /* QUESTIONS */
+    .q-btn-row {
+      display: flex;
+      gap: 18px;
+      margin-top: 16px;
+    }
+
+    .q-btn {
+      flex: 1;
+      padding: 24px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 34px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 96px;
+      text-transform: uppercase;
+    }
+
+    .q-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .q-btn:active { transform: scale(0.985); }
+
+    /* RESULT SCREEN */
+    #resultScreen {
+      place-items: stretch;
+      padding: 16px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: var(--bg);
+    }
+
+    .result-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      padding: 22px 24px 30px;
+      width: 100%;
+      min-height: auto;
+      max-width: none;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 16px;
+      overflow: visible;
+    }
+
+    .result-card h1 {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 0;
+      line-height: 1.08;
+      text-transform: uppercase;
+    }
+
+    .result-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+      gap: 18px;
+      align-items: start;
+      min-height: 0;
+    }
+
+    .result-left {
+      min-width: 0;
+      overflow: visible;
+      padding-right: 4px;
+    }
+
+    .result-right {
+      display: grid;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+      min-width: 0;
+      align-content: start;
+      position: sticky;
+      top: 0;
+    }
+
+    .result-section {
+      margin-bottom: 14px;
+      padding: 16px 18px;
+      background: #F7F6F3;
+      border-radius: 16px;
+    }
+
+    .result-section h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #3A3A3A;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .result-section p {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 22px;
+      line-height: 1.42;
+      font-weight: 700;
+      color: var(--text);
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .section-with-example {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .section-with-example > div:first-child {
+      min-width: 0;
+    }
+
+    .section-top-example {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 16px;
+      row-gap: 10px;
+      align-items: start;
+    }
+
+    .section-top-example h3 {
+      margin: 0;
+    }
+
+    .section-top-example .result-example {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: start;
+      justify-self: end;
+    }
+
+    .section-top-example p {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .result-example {
+      margin-top: 0;
+      align-self: start;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: #FFFFFF;
+    }
+
+    .result-example svg {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 69px;
+      max-height: 69px;
+    }
+
+    .result-example.landolt svg {
+      max-width: 50px;
+      max-height: 50px;
+    }
+
+    .recommendation {
+      padding: 18px 20px;
+      border-radius: 18px;
+      font-size: 20px;
+      line-height: 1.4;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: #cdb6d5;
+      border: 2px solid #a77fb3;
+      color: #111111;
+    }
+
+    .recommendation.warn,
+    .recommendation.ok {
+      background: #cdb6d5;
+      border: 2px solid #a77fb3;
+      color: #111111;
+    }
+
+    .recommendation strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 24px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .qr-card {
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      background: #F8F8F6;
+      padding: 18px;
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .qr-card img {
+      width: min(100%, 280px);
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .qr-title {
+      font-size: 20px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .silmaasema-wrap {
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .saving-status {
+      font-size: 16px;
+      color: #3A3A3A;
+      text-align: center;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .result-bottom {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .new-test-wrap { text-align: right; }
+
+    /* GENDER BUTTONS */
+    .gender-btn-row {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .gender-btn {
+      flex: 1;
+      padding: 22px 18px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      min-height: 88px;
+      text-transform: uppercase;
+    }
+
+    .gender-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .gender-btn:active { transform: scale(0.985); }
+
+    .gender-btn.selected {
+      border-color: var(--accent);
+      background: #e0d0e4;
+    }
+
+    /* SUKUPUOLISIVU – SUURENNETUT TEKSTIT */
+    #genderScreen .card .subtitle {
+      font-size: 47px;
+      line-height: 1.35;
+      margin-bottom: 34px;
+    }
+
+    #genderScreen .field label {
+      font-size: 42px;
+    }
+
+    /* COLOR PREVIEW */
+    .color-preview {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .color-row .field { flex: 1; }
+
+    .color-section-label {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    /* ============================================
+       AGE SCREEN – HORIZONTAL LAYOUT (NO SCROLL)
+       ============================================ */
+    #ageScreen {
+      overflow: hidden;
+    }
+
+    #ageScreen .card {
+      max-width: 1400px;
+      padding: 32px 44px;
+    }
+
+    .age-layout {
+      display: flex;
+      gap: 44px;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .age-left {
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .age-left .step-tag {
+      margin-bottom: 12px;
+    }
+
+    .age-left h1 {
+      margin-bottom: 10px;
+    }
+
+    .age-left .subtitle {
+      margin-bottom: 20px;
+      font-size: 39px;
+    }
+
+    .age-display-box {
+      width: 100%;
+      padding: 18px 16px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 64px;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: #FAFAF8;
+      color: var(--text);
+      min-height: 110px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+
+    .age-display-box:empty::before {
+      content: 'SYÖTÄ IKÄ';
+      color: #666666;
+      font-size: 36px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .age-left .btn-primary {
+      font-size: 32px;
+      padding: 22px 28px;
+      margin-top: 8px;
+    }
+
+    .age-left .cal-error {
+      font-size: 22px;
+    }
+
+    .age-right {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .age-right .age-numpad-label {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .age-right .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .age-right .numpad-btn {
+      width: 110px;
+      height: 90px;
+      padding: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.12s;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+      text-transform: uppercase;
+      display: grid;
+      place-items: center;
+    }
+
+    .age-right .numpad-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .age-right .numpad-btn:active { transform: scale(0.93); background: #e0d0e4; }
+
+    .age-right .numpad-clear {
+      background: #FEF5EE;
+      color: #9A5E0C;
+      border-color: #E6C99D;
+    }
+
+    .age-right .numpad-clear:hover { background: #FDEBD6; border-color: #9A5E0C; }
+
+    .age-right .numpad-clearall {
+      background: #FEF0F0;
+      color: var(--wrong);
+      border-color: #E7B5B5;
+    }
+
+    .age-right .numpad-clearall:hover { background: #FDE0E0; border-color: var(--wrong); }
+
+    /* NUMPAD (used elsewhere, keep original) */
+    .numpad-display {
+      width: 100%;
+      padding: 18px 16px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 52px;
+      font-weight: 800;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      background: #FAFAF8;
+      color: var(--text);
+      min-height: 92px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .numpad-display:empty::before {
+      content: 'SYÖTÄ IKÄ';
+      color: #666666;
+      font-size: 31px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .numpad-btn {
+      padding: 22px 10px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 40px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.12s;
+      text-align: center;
+      user-select: none;
+      -webkit-user-select: none;
+      min-height: 88px;
+      text-transform: uppercase;
+    }
+
+    .numpad-btn:hover { border-color: var(--accent); background: #f0e8f2; }
+    .numpad-btn:active { transform: scale(0.93); background: #e0d0e4; }
+
+    .numpad-clear {
+      background: #FEF5EE;
+      color: #9A5E0C;
+      border-color: #E6C99D;
+    }
+
+    .numpad-clear:hover { background: #FDEBD6; border-color: #9A5E0C; }
+
+    .numpad-clearall {
+      background: #FEF0F0;
+      color: var(--wrong);
+      border-color: #E7B5B5;
+    }
+
+    .numpad-clearall:hover { background: #FDE0E0; border-color: var(--wrong); }
+
+    /* CALIBRATION SCREEN SMALLER */
+    #calScreen { --text-dim: #666666; }
+
+    #calScreen .card {
+      max-width: 660px;
+      padding: 40px 42px;
+    }
+
+    #calScreen .card h1 { font-size: 28px; }
+    #calScreen .card .subtitle { font-size: 18px; margin-bottom: 22px; }
+    #calScreen .field { margin-bottom: 18px; }
+    #calScreen .field label { font-size: 16px; }
+    #calScreen .field input { font-size: 18px; padding: 12px 14px; }
+    #calScreen .field .hint { font-size: 13px; }
+    #calScreen .btn-primary { font-size: 18px; padding: 14px 24px; margin-top: 8px; }
+    #calScreen .cal-error { font-size: 14px; min-height: 18px; }
+    #calScreen .color-section-label { font-size: 14px; }
+    #calScreen .color-preview { width: 22px; height: 22px; }
+
+    @media (max-width: 1200px) {
+      .result-main {
+        grid-template-columns: 1fr;
+      }
+
+      .result-right {
+        position: static;
+      }
+
+      .result-card {
+        min-height: auto;
+      }
+
+      .result-bottom {
+        grid-template-columns: 1fr;
+      }
+
+      .new-test-wrap {
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .card { padding: 34px 24px; }
+      .card h1 { font-size: 36px; }
+      .card .subtitle, .fd-layout-right p { font-size: 24px; }
+      .field label { font-size: 24px; }
+      .field input, .field select { font-size: 24px; }
+      .btn-primary { font-size: 28px; padding: 20px 24px; }
+      .gender-btn { font-size: 24px; }
+      .numpad-btn { font-size: 34px; min-height: 78px; }
+      .numpad-display { font-size: 44px; min-height: 80px; }
+      .option-btn { font-size: 20px; }
+      .q-btn { font-size: 28px; }
+      .arrow-btn { width: 96px; height: 96px; }
+      .arrow-btn svg { width: 40px; height: 40px; }
+      .cant-see-btn { font-size: 36px; min-height: 114px; }
+      .eye-label { font-size: 30px; top: 72px; left: 14px; }
+      .key-hint { font-size: 30px; }
+      .result-section p { font-size: 20px; }
+      .qr-title { font-size: 18px; }
+
+      /* Age screen: stack vertically on narrow screens */
+      .age-layout { flex-direction: column; gap: 20px; }
+      .age-right .numpad-btn { width: auto; }
+    }
+
+    @media (max-width: 860px) {
+      .fd-layout {
+        flex-direction: column;
+      }
+
+      .fd-layout-left, .fd-layout-right {
+        flex: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .screen { padding: 18px; }
+      .card { padding: 26px 18px; }
+      .card h1 { font-size: 30px; }
+      .card .subtitle, .fd-layout-right p { font-size: 21px; }
+      .field label { font-size: 21px; }
+      .field input, .field select { font-size: 21px; }
+      .btn-primary { font-size: 24px; padding: 18px 20px; }
+      .gender-btn-row, .q-btn-row { flex-direction: column; }
+      .gender-btn, .q-btn { font-size: 24px; min-height: 76px; }
+      .numpad-btn { font-size: 28px; min-height: 72px; }
+      .numpad-display { font-size: 38px; min-height: 72px; }
+      .arrow-btn { width: 82px; height: 82px; border-radius: 18px; }
+      .arrow-btn svg { width: 32px; height: 32px; }
+
+      .cant-see-btn {
+        margin-left: 0;
+        width: 100%;
+        font-size: 33px;
+        min-height: 102px;
+      }
+
+      .eye-label {
+        font-size: 27px;
+        padding: 12px 21px;
+        top: 68px;
+        left: 12px;
+      }
+
+      .step-tag { font-size: 18px; padding: 8px 14px; }
+      .key-hint { font-size: 27px; }
+      .fd-layout-right h2 { font-size: 30px; }
+      .option-btn { font-size: 18px; }
+      .fd-confirm-btn { font-size: 22px; padding: 16px 18px; }
+    }
+
+    /* PRINT – KOOSTE */
+    @media print {
+      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .screen, .progress-wrap, .top-bar { all: unset !important; display: none !important; }
+      #printReferral { display: block !important; }
+    }
+
+    #printReferral {
+      display: none;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: #111;
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      padding: 14mm 18mm 12mm;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .ref-header {
+      margin-bottom: 6mm;
+      border-bottom: 2px solid #9a5ea3;
+      padding-bottom: 5mm;
+    }
+
+    .ref-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3mm;
+    }
+
+    .ref-logo-area img {
+      height: 10mm;
+      width: auto;
+      display: block;
+    }
+
+    .ref-header h1 {
+      font-size: 20pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #9a5ea3;
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    .ref-header .ref-date {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #333;
+      margin-top: 2mm;
+    }
+
+    .ref-body {
+      display: flex;
+      gap: 8mm;
+    }
+
+    .ref-left {
+      flex: 1;
+    }
+
+    .ref-right {
+      width: 50mm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4mm;
+      padding-top: 2mm;
+    }
+
+    .ref-right img {
+      width: 44mm;
+      height: 44mm;
+    }
+
+    .ref-right .ref-qr-text {
+      font-size: 8pt;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.3;
+      color: #333;
+    }
+
+    .ref-section {
+      margin-bottom: 4mm;
+      padding: 3mm 4mm;
+      background: #F5F4F1;
+      border-radius: 2mm;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .ref-section h3 {
+      font-size: 9pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #555;
+      letter-spacing: 0.04em;
+      margin: 0 0 1.5mm 0;
+    }
+
+    .ref-section p {
+      font-size: 12pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .ref-section-with-example {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 3mm;
+      align-items: start;
+    }
+
+    .ref-section-with-example > div:first-child {
+      min-width: 0;
+    }
+
+    .ref-section-top-example {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 3mm;
+      row-gap: 1.8mm;
+      align-items: start;
+    }
+
+    .ref-section-top-example h3 {
+      margin: 0;
+    }
+
+    .ref-section-top-example .ref-example {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: start;
+      justify-self: end;
+    }
+
+    .ref-section-top-example p {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .ref-example {
+      margin-top: 0;
+      align-self: start;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.2mm;
+      border: 1pt solid #D8D4CD;
+      border-radius: 2mm;
+      background: #FFFFFF;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .ref-example svg {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 15mm;
+      max-height: 15mm;
+    }
+
+    .ref-example.landolt svg {
+      max-width: 10mm;
+      max-height: 10mm;
+    }
+
+    .ref-recommendation {
+      padding: 4mm 5mm;
+      border-radius: 2mm;
+      margin-top: 0;
+      margin-bottom: 4mm;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      background: #cdb6d5;
+      border: 1.5pt solid #a77fb3;
+      color: #111111;
+    }
+
+    .ref-recommendation.warn,
+    .ref-recommendation.ok {
+      background: #cdb6d5;
+      border: 1.5pt solid #a77fb3;
+      color: #111111;
+    }
+
+    .ref-recommendation strong {
+      display: block;
+      font-size: 12pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 1.5mm;
+    }
+
+    .ref-recommendation span {
+      font-size: 10pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 1.4;
+    }
+
+    .ref-footer {
+      margin-top: 6mm;
+      padding-top: 4mm;
+      border-top: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .ref-footer .ref-note {
+      font-size: 8pt;
+      color: #777;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .ref-footer img {
+      height: 10mm;
+      width: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+
+  <div class="top-bar" id="topBar" style="display:none;">
+    <button class="top-bar-btn" id="calBtn">KALIBROI</button>
+    <button class="top-bar-btn" id="restartBtn" style="display:none;">ALOITA ALUSTA</button>
+  </div>
+
+  <!-- KALIBROINTI -->
+  <div class="screen hidden" id="calScreen">
+    <div class="card">
+      <h1>KALIBROINTI</h1>
+      <p class="subtitle">SYÖTÄ KALIBROINTITIEDOT. NÄMÄ ASETUKSET SÄILYVÄT SELAIMEN MUISTISSA.</p>
+
+      <div class="field">
+        <label for="pxPerMmInput">PX / MM</label>
+        <input id="pxPerMmInput" type="number" step="any" min="0.1" placeholder="ESIM. 3.7795" />
+        <div class="hint">NÄYTÖN MITTAKALIBROINNIN ANTAMA ARVO</div>
+      </div>
+
+      <div class="field">
+        <label for="distanceInput">KATSELUSETÄISYYS (M)</label>
+        <input id="distanceInput" type="number" step="any" min="0.1" placeholder="ESIM. 4" />
+        <div class="hint">TYYPILLISESTI 4 TAI 6 METRIÄ</div>
+      </div>
+
+      <div class="color-section-label">PUNAINEN <span class="color-preview" id="redPreview" style="background:#e20000;"></span></div>
+      <div class="color-row">
+        <div class="field"><label for="calRedR">R</label><input id="calRedR" type="number" min="0" max="255" step="1" placeholder="226" /></div>
+        <div class="field"><label for="calRedG">G</label><input id="calRedG" type="number" min="0" max="255" step="1" placeholder="0" /></div>
+        <div class="field"><label for="calRedB">B</label><input id="calRedB" type="number" min="0" max="255" step="1" placeholder="0" /></div>
+      </div>
+
+      <div class="color-section-label">VIHREÄ <span class="color-preview" id="greenPreview" style="background:#009d00;"></span></div>
+      <div class="color-row">
+        <div class="field"><label for="calGreenR">R</label><input id="calGreenR" type="number" min="0" max="255" step="1" placeholder="0" /></div>
+        <div class="field"><label for="calGreenG">G</label><input id="calGreenG" type="number" min="0" max="255" step="1" placeholder="157" /></div>
+        <div class="field"><label for="calGreenB">B</label><input id="calGreenB" type="number" min="0" max="255" step="1" placeholder="0" /></div>
+      </div>
+
+      <button class="btn-primary" id="saveCalBtn">TALLENNA JA PALAA</button>
+      <div class="cal-error" id="calError"></div>
+    </div>
+  </div>
+
+  <!-- OHJEET / TERVETULOA -->
+  <div class="screen" id="welcomeScreen">
+    <div class="card" style="max-width:90vw; width:90vw;">
+      <h1>◔ NÄKÖHAVAINNOT URHEILUTILANTEISSA</h1>
+      <p class="subtitle">VISUAALINEN TEHTÄVÄKOKONAISUUS</p>
+
+      <div style="background:#F7F6F3; border-radius:16px; padding:28px 42px; margin-bottom:28px;">
+        <p class="subtitle" style="font-size:42px; margin-bottom:18px; color:var(--text);">OHJEET ENNEN ALOITUSTA</p>
+
+        <p class="subtitle" style="font-size:39px; margin-bottom:14px; font-weight:700; color:var(--text-dim); line-height:1.35;">
+          1. ISTU TUOLILLE NÄYTÖN ETEEN.
+        </p>
+        <p class="subtitle" style="font-size:39px; margin-bottom:14px; font-weight:700; color:var(--text-dim); line-height:1.35;">
+          2. JOS KÄYTÄT PIILOLASEJA TAI KAUKONÄKÖÖN TARKOITETTUJA SILMÄLASEJA, PIDÄ NE KÄYTÖSSÄ TEHTÄVIEN AJAN.
+        </p>
+        <p class="subtitle" style="font-size:39px; margin-bottom:14px; font-weight:700; color:var(--text-dim); line-height:1.35;">
+          3. KÄYTÄ HIIRTÄ VALINTOJEN TEKEMISEEN. NÄPPÄIMISTÖÄ EI TARVITA.
+        </p>
+        <p class="subtitle" style="font-size:30px; margin-bottom:0; font-weight:700; color:var(--text-dim); line-height:1.55;">
+          TEHTÄVÄKOKONAISUUS ON SUUNTAA ANTAVA ITSEARVIOINTI. SE EI OLE NÄÖNTUTKIMUS, EI ANNA DIAGNOOSIA EIKÄ KORVAA OPTIKON TAI SILMÄLÄÄKÄRIN ARVIOTA.
+        </p>
+      </div>
+
+      <button class="btn-primary" id="welcomeStartBtn">ALOITA →</button>
+    </div>
+  </div>
+
+  <!-- ALOITUS – SUKUPUOLI -->
+  <div class="screen hidden" id="genderScreen">
+    <div class="cal-line-200 cal-line-gender" style="display:none;"></div>
+    <div class="card">
+      <div class="step-tag">VAIHE 1 / 5</div>
+      <p class="subtitle">SYÖTÄ PERUSTIETOSI JA ETENE OHJEIDEN MUKAAN.</p>
+
+      <div class="field">
+        <label>SUKUPUOLI</label>
+        <div class="gender-btn-row">
+          <button class="gender-btn" data-gender="NAINEN">NAINEN</button>
+          <button class="gender-btn" data-gender="MIES">MIES</button>
+          <button class="gender-btn" data-gender="EN HALUA VASTATA">MUU/EN HALUA VASTATA</button>
+        </div>
+      </div>
+
+      <div class="cal-error" id="genderError"></div>
+    </div>
+  </div>
+
+  <!-- ALOITUS – IKÄ (HORIZONTAL LAYOUT) -->
+  <div class="screen hidden" id="ageScreen">
+    <div class="cal-line-200 cal-line-age" style="display:none;"></div>
+    <div class="card">
+      <div class="age-layout">
+        <div class="age-left">
+          <div class="step-tag">VAIHE 1 / 5</div>
+          <p class="subtitle">SYÖTÄ IKÄSI JA JATKA VISUAALISEEN TEHTÄVÄÄN.</p>
+          <input id="ageInput" type="hidden" />
+          <div class="age-display-box" id="ageDisplay"></div>
+          <button class="btn-primary" id="ageNextBtn">TALLENNA JA JATKA →</button>
+          <div class="cal-error" id="ageError"></div>
+        </div>
+        <div class="age-right">
+          <span class="age-numpad-label">IKÄ</span>
+          <div class="numpad-grid">
+            <button class="numpad-btn" data-num="1">1</button>
+            <button class="numpad-btn" data-num="2">2</button>
+            <button class="numpad-btn" data-num="3">3</button>
+            <button class="numpad-btn" data-num="4">4</button>
+            <button class="numpad-btn" data-num="5">5</button>
+            <button class="numpad-btn" data-num="6">6</button>
+            <button class="numpad-btn" data-num="7">7</button>
+            <button class="numpad-btn" data-num="8">8</button>
+            <button class="numpad-btn" data-num="9">9</button>
+            <button class="numpad-btn numpad-clear" data-num="clear">⌫</button>
+            <button class="numpad-btn" data-num="0">0</button>
+            <button class="numpad-btn numpad-clearall" data-num="clearall">C</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IKÄRAJOITUS-NÄYTTÖ -->
+  <div class="screen hidden" id="underageScreen">
+    <div class="underage-overlay">
+      <div class="underage-message">TEHTÄVÄÄ EI OLE SUUNNITELTU ALLE 8 VUOTIAILLE.</div>
+      <button class="btn-primary underage-back-btn" id="underageBackBtn">PALAA ALKUUN</button>
+    </div>
+  </div>
+
+  <!-- OHJE ENNEN TARKKUUSHAVAINTOTEHTÄVÄÄ -->
+  <div class="screen hidden" id="instructScreen">
+    <div class="card">
+      <div class="step-tag" id="eyeStepTag">VAIHE 2 / 5</div>
+      <h1 id="instructTitle">TARKKUUSHAVAINTOTEHTÄVÄ – PEITÄ VASEN SILMÄ</h1>
+      <p class="subtitle" id="instructText"></p>
+      <button class="btn-primary" id="instructStartBtn">ALOITA</button>
+    </div>
+  </div>
+
+  <!-- LANDOLT TEST -->
+  <div class="screen hidden" id="testScreen">
+    <div class="eye-label" id="eyeLabel">PEITÄ VASEN SILMÄ</div>
+    <div class="optotype-area">
+      <div class="optotype-container" id="optotypeContainer"></div>
+    </div>
+    <div class="controls-bar">
+      <div class="key-hint">KÄYTÄ NUOLINÄPPÄIMIÄ TAI VÄLILYÖNTIÄ</div>
+      <button class="arrow-btn" data-dir="left" title="VASEN (←)">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="arrow-btn" data-dir="up" title="YLÖS (↑)">
+        <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+      <button class="arrow-btn" data-dir="down" title="ALAS (↓)">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="arrow-btn" data-dir="right" title="OIKEA (→)">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="cant-see-btn" id="cantSeeBtn" title="VÄLILYÖNTI">EN NÄE</button>
+    </div>
+  </div>
+
+  <!-- FD OHJE -->
+  <div class="screen hidden" id="fdInstructScreen">
+    <div class="card">
+      <div class="step-tag">VAIHE 3 / 5</div>
+      <h1>NÄKÖHAVAINTOTEHTÄVÄ</h1>
+      <p class="subtitle">1. ASETA PUNA-VIHERSUODATTIMET SILMIESI ETEEN SITEN, ETTÄ PUNAINEN SUODATIN ON OIKEAN SILMÄN EDESSÄ JA VIHREÄ VASEMMAN SILMÄN EDESSÄ.<br>2. KATSELE TESTIYMPYRÄN KESKELLE JA TARKKAILE PUNAISTA JA VIHREÄÄ PALKKIA.<br>3. VASTAA NÄKEMÄSI MUKAAN.</p>
+      <button class="btn-primary" id="fdInstructStartBtn">ALOITA →</button>
+    </div>
+  </div>
+
+  <!-- FD PYSTY (MODIFIED: image selection buttons) -->
+  <div class="screen hidden" id="fdVertScreen">
+    <div class="fd-vert-layout">
+      <div class="fd-vert-left">
+        <div class="fd-vert-instruction">1. KATSO ALLA OLEVAA KUVAA, JOSSA ON PUNAINEN JA VIHREÄ PALKKI.<br>2. VALITSE OIKEASTA REUNASTA KUVA, JOKA VASTAA PARHAITEN NÄKEMÄÄSI.<br>3. JOS PALKIT EIVÄT OLE TÄYSIN SAMASSA LINJASSA, VALITSE SIIRTYMÄÄ VASTAAVA KUVA.<br>4. JOS TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI, VALITSE ALIN LAATIKKO.</div>
+        <div class="fd-stage" id="fdVertStage"></div>
+      </div>
+      <div class="fd-vert-right">
+        <button class="fd-img-btn fd-vert-img-btn" data-val="ok">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_ei">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+
+  <!-- Everything rotated -90° around center -->
+  <g transform="rotate(-90, 256, 256)">
+
+    <!-- Black circle -->
+    <circle cx="256" cy="256" r="240" fill="#000000"/>
+
+    <!-- White vertical strip -->
+    <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+
+    <!-- Plus/cross symbol -->
+    <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+    <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+
+    <!-- Top hollow square -->
+    <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Bottom hollow square -->
+    <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Green bar (left) -->
+    <rect x="42" y="237" width="152" height="38" fill="#ffffff"/>
+
+    <!-- Red bar (right) -->
+    <rect x="318" y="237" width="152" height="38" fill="#ffffff"/>
+
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-vert-img-btn" data-val="eso">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_eso">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+
+  <!-- Everything rotated -90° around center -->
+  <g transform="rotate(-90, 256, 256)">
+
+    <!-- Black circle -->
+    <circle cx="256" cy="256" r="240" fill="#000000"/>
+
+    <!-- White vertical strip -->
+    <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+
+    <!-- Plus/cross symbol -->
+    <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+    <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+
+    <!-- Top hollow square -->
+    <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Bottom hollow square -->
+    <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Green bar (left) -->
+    <rect x="42" y="227.5" width="152" height="38" fill="#ffffff"/>
+
+    <!-- Red bar (right) -->
+    <rect x="318" y="246.5" width="152" height="38" fill="#ffffff"/>
+
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-vert-img-btn" data-val="exo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_exo">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+
+  <!-- Everything rotated -90° around center -->
+  <g transform="translate(512,0) scale(-1,1) rotate(-90, 256, 256)">
+
+    <!-- Black circle -->
+    <circle cx="256" cy="256" r="240" fill="#000000"/>
+
+    <!-- White vertical strip -->
+    <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+
+    <!-- Plus/cross symbol -->
+    <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+    <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+
+    <!-- Top hollow square -->
+    <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Bottom hollow square -->
+    <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+
+    <!-- Green bar (left) -->
+    <rect x="42" y="227.5" width="152" height="38" fill="#ffffff"/>
+
+    <!-- Red bar (right) -->
+    <rect x="318" y="246.5" width="152" height="38" fill="#ffffff"/>
+
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-disappear-btn fd-vert-img-btn" data-val="disappears">
+          <span>TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="screen hidden" id="fdHorizScreen">
+    <div class="fd-vert-layout">
+      <div class="fd-vert-left">
+        <div class="fd-vert-instruction">1. KATSO ALLA OLEVAA KUVAA, JOSSA ON PUNAINEN JA VIHREÄ PALKKI.<br>2. VALITSE OIKEASTA REUNASTA KUVA, JOKA VASTAA PARHAITEN NÄKEMÄÄSI.<br>3. JOS PALKIT EIVÄT OLE TÄYSIN SAMASSA LINJASSA, VALITSE SIIRTYMÄÄ VASTAAVA KUVA.<br>4. JOS TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI, VALITSE ALIN LAATIKKO.</div>
+        <div class="fd-stage" id="fdHorizStage"></div>
+      </div>
+      <div class="fd-vert-right">
+        <button class="fd-img-btn fd-horiz-img-btn" data-val="ok">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_h_ei">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+  <g transform="rotate(0, 256, 256)">
+    <circle cx="256" cy="256" r="240" fill="#000000"/>
+    <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+    <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+    <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+    <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+    <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+    <rect x="42" y="237" width="152" height="38" fill="#ffffff"/>
+    <rect x="318" y="237" width="152" height="38" fill="#ffffff"/>
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-horiz-img-btn" data-val="hyper">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_h_hyper">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+  <g transform="translate(0, 512) scale(1, -1)">
+    <g transform="rotate(0, 256, 256)">
+      <circle cx="256" cy="256" r="240" fill="#000000"/>
+      <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+      <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+      <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+      <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+      <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+      <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+      <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+      <rect x="42" y="246.5" width="152" height="38" fill="#ffffff"/>
+      <rect x="318" y="227.5" width="152" height="38" fill="#ffffff"/>
+    </g>
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-horiz-img-btn" data-val="hypo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:100%;max-width:200px;height:auto;display:block;margin:0 auto;pointer-events:none;">
+  <defs>
+    <clipPath id="c_h_hypo">
+      <circle cx="256" cy="256" r="240"/>
+    </clipPath>
+  </defs>
+  <g transform="rotate(0, 256, 256)">
+    <circle cx="256" cy="256" r="240" fill="#000000"/>
+    <rect x="210" y="33" width="92" height="446" fill="#ffffff"/>
+    <rect x="250.5" y="224" width="11" height="64" fill="#000000"/>
+    <rect x="224" y="250.5" width="64" height="11" fill="#000000"/>
+    <rect x="228" y="100.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="111.5" width="34" height="34" fill="#ffffff"/>
+    <rect x="228" y="355.5" width="56" height="56" fill="#000000"/>
+    <rect x="239" y="366.5" width="34" height="34" fill="#ffffff"/>
+    <rect x="42" y="246.5" width="152" height="38" fill="#ffffff"/>
+    <rect x="318" y="227.5" width="152" height="38" fill="#ffffff"/>
+  </g>
+</svg>
+        </button>
+        <button class="fd-img-btn fd-disappear-btn fd-horiz-img-btn" data-val="disappears">
+          <span>TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KYSYMYKSET -->
+  <div class="screen hidden" id="questionScreen">
+    <div class="card" id="questionCard"></div>
+  </div>
+
+  <!-- TULOKSET -->
+  <div class="screen hidden" id="resultScreen">
+    <div class="result-card" id="resultCard"></div>
+  </div>
+
+  <script>
+    // SANTASPORT ROVANIEMI: oma Apps Script -verkkosovellus, joka kirjoittaa Santasportin omaan Google Sheetiin.
+    // Liitä tähän Santasport-sheetin Apps Scriptin julkaisun /exec-URL (ks. README.md).
+    const APPS_SCRIPT_URL = 'LIITA_SANTASPORT_APPS_SCRIPT_URL_TAHAN';
+    const SITE_NAME = 'Santasport Rovaniemi';
+    const CAL_PASSWORD = 'Silmä';
+    const STORAGE_KEY = 'santasport_naontutkimus_cal_v1';
+
+    const QR_CODE_DATA_URL = 'qr.png';
+    const QR_INFO_URL = 'qr-info.svg';
+    const LOGO_URL = 'logo.jpg';
+
+    const VISUS_LEVELS = [0.4, 0.5, 0.63, 0.8, 1.0, 1.25];
+    const REQUIRED_CORRECT = 3;
+    const MAX_ERRORS = 2;
+    const DIRECTIONS = ['right', 'up', 'left', 'down'];
+    const ROTATIONS = { right: 0, down: 90, left: 180, up: 270 };
+    const TAN_1_ARCMIN = Math.tan(Math.PI / 10800);
+    const MALLET_DIAMETER_MM = 108;
+    const REFERENCE_DISTANCE_M = 5.75;
+
+    let pxPerMm = 0, distanceM = 0;
+    let redColor = { r: 226, g: 0, b: 0 };
+    let greenColor = { r: 0, g: 157, b: 0 };
+    let gender = '', age = 0;
+    let currentLevelIdx = 0, correctCount = 0, errorCount = 0;
+    let currentDirection = '', lastDirection = '';
+    let uidCounter = 0, inputLocked = false, levelLog = [];
+    let currentEye = 'right';
+    let visusRight = null, visusLeft = null;
+    // fdVertSelection stores: 'ok', 'eso', 'exo', or 'disappears'
+    let fdVertSelection = null;
+    let fdHorizSelection = null; // 'ok', 'hyper', 'hypo', or 'disappears'
+    const questions = [
+      { id: 'headache', text: 'SÄRKEEKÖ SINULLA PÄÄTÄ VÄHINTÄÄN KERRAN VIIKOSSA?' },
+      { id: 'eyeFatigue', text: 'VÄSYVÄTKÖ SILMÄSI HELPOSTI?' },
+      { id: 'readingIssue', text: 'TUNTUVATKO RIVIT LUKIESSA JOSKUS HYPPIVÄN NIIN, ETTÄ LUKEMINEN ON VAIKEAA?' }
+    ];
+    let questionAnswers = {}, currentQuestionIdx = 0;
+
+    const $ = id => document.getElementById(id);
+
+    function goFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      }
+    }
+
+    const screenIds = [
+      'calScreen','welcomeScreen','genderScreen','ageScreen','underageScreen','instructScreen','testScreen',
+      'fdInstructScreen','fdVertScreen','fdHorizScreen','questionScreen','resultScreen'
+    ];
+
+    function showScreen(id) {
+      screenIds.forEach(s => $(s).classList.add('hidden'));
+      $(id).classList.remove('hidden');
+      $(id).scrollTop = 0;
+      window.scrollTo(0, 0);
+
+      const lineMap = {
+        genderScreen: '.cal-line-gender',
+        ageScreen: '.cal-line-age'
+      };
+
+      document.querySelectorAll('.cal-line-200').forEach(el => el.style.display = 'none');
+
+      if (lineMap[id] && pxPerMm > 0) {
+        const line = document.querySelector(lineMap[id]);
+        if (line) {
+          line.style.display = 'block';
+          line.style.width = (200 * pxPerMm) + 'px';
+          line.style.marginTop = (10 * pxPerMm) + 'px';
+          line.style.marginBottom = '8px';
+        }
+      }
+
+      if (id === 'calScreen') {
+        $('topBar').style.display = 'none';
+      } else if (id === 'welcomeScreen') {
+        $('topBar').style.display = 'flex';
+        $('calBtn').style.display = 'block';
+        $('restartBtn').style.display = 'none';
+      } else if (id === 'resultScreen') {
+        $('topBar').style.display = 'none';
+      } else {
+        $('topBar').style.display = 'flex';
+        $('calBtn').style.display = 'none';
+        $('restartBtn').style.display = 'block';
+      }
+    }
+
+    function setProgress(pct) {
+      $('progressFill').style.width = pct + '%';
+    }
+
+
+    async function clearBrowserRuntimeCaches() {
+      // Poistaa mahdollisen PWA/service worker -välimuistin ennen uutta latausta.
+      // Tämä ei poista käyttäjän kalibrointitietoja localStoragesta.
+      // Origin (tkoljonen-wq.github.io) on yhteinen kaikille sovelluksille, joten
+      // poistetaan VAIN tämän sovelluksen oma service worker ja omat välimuistit.
+      const appScope = new URL('./', window.location.href).href;
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations
+            .filter(reg => reg.scope === appScope)
+            .map(reg => reg.unregister()));
+        }
+      } catch (e) {}
+
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys
+            .filter(key => key.startsWith('santasport-'))
+            .map(key => caches.delete(key)));
+        }
+      } catch (e) {}
+    }
+
+    async function startNewStudyWithServerVersionCheck() {
+      goFullscreen();
+
+      const activeBtn = document.activeElement;
+      const originalText = activeBtn && activeBtn.tagName === 'BUTTON' ? activeBtn.textContent : '';
+      if (activeBtn && activeBtn.tagName === 'BUTTON') {
+        activeBtn.disabled = true;
+        activeBtn.textContent = 'TARKISTETAAN UUSI VERSIO…';
+      }
+
+      try {
+        const checkUrl = new URL(window.location.href);
+        checkUrl.hash = '';
+        checkUrl.searchParams.set('_versioncheck', Date.now().toString());
+
+        const response = await fetch(checkUrl.toString(), {
+          method: 'GET',
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+
+        if (response.ok) {
+          await clearBrowserRuntimeCaches();
+
+          const reloadUrl = new URL(window.location.href);
+          reloadUrl.hash = '';
+          reloadUrl.searchParams.set('_reload', Date.now().toString());
+
+          window.location.replace(reloadUrl.toString());
+          return;
+        }
+      } catch (e) {}
+
+      // Jos verkkoyhteys tai palvelin ei vastaa, aloitetaan uusi tutkimus ilman uudelleenlatausta.
+      if (activeBtn && activeBtn.tagName === 'BUTTON') {
+        activeBtn.disabled = false;
+        activeBtn.textContent = originalText;
+      }
+      resetAll();
+    }
+
+    function clampByte(v) {
+      return Math.max(0, Math.min(255, Math.round(v)));
+    }
+
+    function rgbHex(c) {
+      return '#' + [c.r, c.g, c.b].map(n => n.toString(16).padStart(2, '0')).join('');
+    }
+
+    function applyColors() {
+      document.documentElement.style.setProperty('--bar-red', rgbHex(redColor));
+      document.documentElement.style.setProperty('--bar-green', rgbHex(greenColor));
+    }
+
+    function isValidRgb(c) {
+      return !!c && Number.isFinite(c.r) && Number.isFinite(c.g) && Number.isFinite(c.b);
+    }
+
+    function loadCal() {
+      try {
+        const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (d && d.pxPerMm > 0 && d.distanceM > 0) {
+          pxPerMm = d.pxPerMm;
+          distanceM = d.distanceM;
+          if (isValidRgb(d.red)) redColor = { r: clampByte(d.red.r), g: clampByte(d.red.g), b: clampByte(d.red.b) };
+          if (isValidRgb(d.green)) greenColor = { r: clampByte(d.green.r), g: clampByte(d.green.g), b: clampByte(d.green.b) };
+          applyColors();
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function saveCal() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          pxPerMm,
+          distanceM,
+          red: redColor,
+          green: greenColor
+        }));
+      } catch (e) {}
+    }
+
+    function updateColorPreviews() {
+      const rr = parseInt($('calRedR').value) || 0;
+      const rg = parseInt($('calRedG').value) || 0;
+      const rb = parseInt($('calRedB').value) || 0;
+      const gr = parseInt($('calGreenR').value) || 0;
+      const gg = parseInt($('calGreenG').value) || 0;
+      const gb = parseInt($('calGreenB').value) || 0;
+      $('redPreview').style.background = rgbHex({ r: clampByte(rr), g: clampByte(rg), b: clampByte(rb) });
+      $('greenPreview').style.background = rgbHex({ r: clampByte(gr), g: clampByte(gg), b: clampByte(gb) });
+    }
+
+    ['calRedR','calRedG','calRedB','calGreenR','calGreenG','calGreenB'].forEach(id => {
+      $(id).addEventListener('input', updateColorPreviews);
+    });
+
+    $('restartBtn').addEventListener('click', () => {
+      goFullscreen();
+      resetAll();
+    });
+
+    $('underageBackBtn').addEventListener('click', () => {
+      resetAll();
+    });
+
+    $('calBtn').addEventListener('click', () => {
+      const pw = prompt('SYÖTÄ SALASANA:');
+      if (pw === CAL_PASSWORD) {
+        $('pxPerMmInput').value = pxPerMm || '';
+        $('distanceInput').value = distanceM || '';
+        $('calRedR').value = redColor.r;
+        $('calRedG').value = redColor.g;
+        $('calRedB').value = redColor.b;
+        $('calGreenR').value = greenColor.r;
+        $('calGreenG').value = greenColor.g;
+        $('calGreenB').value = greenColor.b;
+        updateColorPreviews();
+        $('calError').textContent = '';
+        showScreen('calScreen');
+      }
+    });
+
+    $('saveCalBtn').addEventListener('click', () => {
+      const px = parseFloat($('pxPerMmInput').value);
+      const dist = parseFloat($('distanceInput').value);
+
+      if (!px || px <= 0) {
+        $('calError').textContent = 'SYÖTÄ KELVOLLINEN PX/MM-ARVO.';
+        return;
+      }
+      if (!dist || dist <= 0) {
+        $('calError').textContent = 'SYÖTÄ KELVOLLINEN ETÄISYYS.';
+        return;
+      }
+
+      $('calError').textContent = '';
+      pxPerMm = px;
+      distanceM = dist;
+
+      const rr = $('calRedR').value.trim();
+      const rg = $('calRedG').value.trim();
+      const rb = $('calRedB').value.trim();
+      const gr = $('calGreenR').value.trim();
+      const gg = $('calGreenG').value.trim();
+      const gb = $('calGreenB').value.trim();
+
+      if (rr !== '') redColor.r = clampByte(parseInt(rr));
+      if (rg !== '') redColor.g = clampByte(parseInt(rg));
+      if (rb !== '') redColor.b = clampByte(parseInt(rb));
+      if (gr !== '') greenColor.r = clampByte(parseInt(gr));
+      if (gg !== '') greenColor.g = clampByte(parseInt(gg));
+      if (gb !== '') greenColor.b = clampByte(parseInt(gb));
+
+      applyColors();
+      saveCal();
+      showScreen('welcomeScreen');
+    });
+
+    let ageString = '';
+
+    function updateAgeDisplay() {
+      $('ageDisplay').textContent = ageString;
+      $('ageInput').value = ageString;
+    }
+
+    document.querySelectorAll('#ageScreen .numpad-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.num;
+        if (val === 'clear') {
+          ageString = ageString.slice(0, -1);
+        } else if (val === 'clearall') {
+          ageString = '';
+        } else {
+          if (ageString.length < 3) ageString += val;
+        }
+        updateAgeDisplay();
+      });
+    });
+
+    $('welcomeStartBtn').addEventListener('click', () => {
+      goFullscreen();
+      setProgress(1);
+      showScreen('genderScreen');
+    });
+
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        gender = btn.dataset.gender;
+        $('genderError').textContent = '';
+        setProgress(3);
+        showScreen('ageScreen');
+      });
+    });
+
+    $('ageNextBtn').addEventListener('click', () => {
+      const rawAge = $('ageInput').value.trim();
+      const a = Number.parseInt(rawAge, 10);
+
+      if (rawAge === '' || Number.isNaN(a) || a < 1 || a > 120) {
+        $('ageError').textContent = 'SYÖTÄ KELVOLLINEN IKÄ.';
+        return;
+      }
+
+      $('ageError').textContent = '';
+
+      if (a < 8) {
+        showScreen('underageScreen');
+        return;
+      }
+
+      if (!pxPerMm || !distanceM) {
+        $('ageError').textContent = 'KALIBROINTIA EI OLE TEHTY. PYYDÄ TUTKIJAA KALIBROIMAAN LAITE ENSIN (KALIBROI-NAPPI OIKEASTA YLÄKULMASTA).';
+        return;
+      }
+
+      age = a;
+      setProgress(10);
+      prepareEyeTest('right');
+    });
+
+    function optotypeDiameterMm(visus, distanceMm) {
+      return 5 * TAN_1_ARCMIN * distanceMm / visus;
+    }
+
+    function createLandoltSVG(direction, sizePx, uid) {
+      const rot = ROTATIONS[direction];
+      const clipId = `c${uid}`;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', sizePx);
+      svg.setAttribute('height', sizePx);
+      svg.setAttribute('viewBox', '0 0 120 120');
+      svg.innerHTML = `
+        <defs>
+          <clipPath id="${clipId}">
+            <path d="M0,0 H120 V50 H60 V70 H120 V120 H0 Z"/>
+          </clipPath>
+        </defs>
+        <g transform="rotate(${rot} 60 60)">
+          <circle cx="60" cy="60" r="40" fill="none" stroke="#1A1A1A" stroke-width="20" clip-path="url(#${clipId})"/>
+        </g>`;
+      return svg;
+    }
+
+    function randomDirection() {
+      const pool = DIRECTIONS.filter(d => d !== lastDirection);
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      lastDirection = pick;
+      return pick;
+    }
+
+    function showOptotype() {
+      const visus = VISUS_LEVELS[currentLevelIdx];
+      // Renkaan ulkohalkaisija on 100 yksikköä 120 yksikön viewBoxissa,
+      // joten SVG:n kokoa kasvatetaan kertoimella 120/100 (vrt. buildMalletSVG 512/480).
+      const diamPx = optotypeDiameterMm(visus, distanceM * 1000) * pxPerMm * (120 / 100);
+      currentDirection = randomDirection();
+      const svg = createLandoltSVG(currentDirection, diamPx, uidCounter++);
+      const oc = $('optotypeContainer');
+      oc.innerHTML = '';
+      oc.classList.add('entering');
+      oc.appendChild(svg);
+      requestAnimationFrame(() => requestAnimationFrame(() => oc.classList.remove('entering')));
+    }
+
+    function processAnswer(answer) {
+      if (inputLocked) return;
+      inputLocked = true;
+
+      const isCantSee = answer === '__cant_see__';
+      const isCorrect = !isCantSee && answer === currentDirection;
+      const oc = $('optotypeContainer');
+
+      oc.classList.add(isCorrect ? 'flash-correct' : 'flash-wrong');
+      if (isCorrect) correctCount++;
+      else errorCount++;
+
+      setTimeout(() => {
+        oc.classList.remove('flash-correct', 'flash-wrong');
+
+        if (correctCount >= REQUIRED_CORRECT) {
+          levelLog.push({
+            visus: VISUS_LEVELS[currentLevelIdx],
+            passed: true,
+            correct: correctCount,
+            errors: errorCount
+          });
+
+          if (currentLevelIdx >= VISUS_LEVELS.length - 1) {
+            finishEyeTest(VISUS_LEVELS[currentLevelIdx]);
+            return;
+          }
+
+          currentLevelIdx++;
+          correctCount = 0;
+          errorCount = 0;
+          showOptotype();
+          inputLocked = false;
+          return;
+        }
+
+        // "En näe" advances immediately (1 press), wrong arrows need 2
+        const errorThreshold = isCantSee ? 1 : MAX_ERRORS;
+        if (errorCount >= errorThreshold) {
+          levelLog.push({
+            visus: VISUS_LEVELS[currentLevelIdx],
+            passed: false,
+            correct: correctCount,
+            errors: errorCount
+          });
+          finishEyeTest(currentLevelIdx === 0 ? null : VISUS_LEVELS[currentLevelIdx - 1]);
+          return;
+        }
+
+        showOptotype();
+        inputLocked = false;
+      }, 350);
+    }
+
+    function prepareEyeTest(eye) {
+      currentEye = eye;
+      $('eyeStepTag').textContent = 'VAIHE 2 / 5';
+
+      if (eye === 'right') {
+        $('instructTitle').textContent = 'TARKKUUSHAVAINTOTEHTÄVÄ – PEITÄ VASEN SILMÄ';
+        $('instructText').innerHTML = '1. PEITÄ VASEN SILMÄSI KÄDELLÄ TAI PEITTOLAPULLA.<br>2. KATSO RUUDULLA NÄKYVIÄ RENGASKUVIOITA OIKEALLA SILMÄLLÄ JA VASTAA NUOLINÄPPÄIMILLÄ MIHIN SUUNTAAN AUKKO OSOITTAA.<br>3. JOS ET EROTA AUKON SUUNTAA, VALITSE "EN NÄE".';
+      } else {
+        $('instructTitle').textContent = 'TARKKUUSHAVAINTOTEHTÄVÄ – PEITÄ OIKEA SILMÄ';
+        $('instructText').innerHTML = '1. PEITÄ NYT OIKEA SILMÄSI KÄDELLÄ TAI PEITTOLAPULLA.<br>2. KATSO RUUDULLA NÄKYVIÄ RENGASKUVIOITA VASEMMALLA SILMÄLLÄ JA VASTAA NUOLINÄPPÄIMILLÄ, MIHIN SUUNTAAN AUKKO OSOITTAA.<br>3. JOS ET EROTA AUKON SUUNTAA, VALITSE "EN NÄE".';
+      }
+
+      showScreen('instructScreen');
+    }
+
+    $('instructStartBtn').addEventListener('click', () => {
+      currentLevelIdx = 0;
+      correctCount = 0;
+      errorCount = 0;
+      uidCounter = 0;
+      inputLocked = false;
+      levelLog = [];
+      lastDirection = '';
+
+      $('eyeLabel').textContent = currentEye === 'right' ? 'PEITÄ VASEN SILMÄ' : 'PEITÄ OIKEA SILMÄ';
+      showScreen('testScreen');
+      showOptotype();
+    });
+
+    function finishEyeTest(visus) {
+      if (currentEye === 'right') {
+        visusRight = visus;
+        setProgress(30);
+        prepareEyeTest('left');
+      } else {
+        visusLeft = visus;
+        setProgress(50);
+        showScreen('fdInstructScreen');
+      }
+    }
+
+    document.querySelectorAll('.arrow-btn').forEach(btn => {
+      btn.addEventListener('click', () => processAnswer(btn.dataset.dir));
+    });
+
+    $('cantSeeBtn').addEventListener('click', () => processAnswer('__cant_see__'));
+
+    document.addEventListener('keydown', e => {
+      if ($('testScreen').classList.contains('hidden')) return;
+
+      const map = {
+        ArrowLeft: 'left',
+        ArrowRight: 'right',
+        ArrowUp: 'up',
+        ArrowDown: 'down'
+      };
+
+      if (map[e.key]) {
+        e.preventDefault();
+        processAnswer(map[e.key]);
+      } else if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        processAnswer('__cant_see__');
+      }
+    });
+
+    function malletDiameterMm(dist) {
+      return MALLET_DIAMETER_MM * (dist / REFERENCE_DISTANCE_M);
+    }
+
+    function buildMalletSVG(rotation) {
+      const sz = malletDiameterMm(distanceM) * pxPerMm * (512 / 480);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('width', sz);
+      svg.setAttribute('height', sz);
+      svg.setAttribute('viewBox', '0 0 512 512');
+      svg.classList.add('fd-svg');
+
+      const green = rgbHex(greenColor);
+      const red = rgbHex(redColor);
+
+      svg.innerHTML = `
+        <g transform="rotate(${rotation}, 256, 256)">
+          <circle cx="256" cy="256" r="240" fill="#000"/>
+          <rect x="210" y="33" width="92" height="446" fill="#fff"/>
+          <rect x="250.5" y="224" width="11" height="64" fill="#000"/>
+          <rect x="224" y="250.5" width="64" height="11" fill="#000"/>
+          <rect x="228" y="100.5" width="56" height="56" fill="#000"/>
+          <rect x="239" y="111.5" width="34" height="34" fill="#fff"/>
+          <rect x="228" y="355.5" width="56" height="56" fill="#000"/>
+          <rect x="239" y="366.5" width="34" height="34" fill="#fff"/>
+          <g><rect x="42" y="237" width="152" height="38" fill="${green}"/></g>
+          <g><rect x="318" y="237" width="152" height="38" fill="${red}"/></g>
+        </g>`;
+      return svg;
+    }
+
+    /* FD VERT – Image selection (single-select) */
+    $('fdInstructStartBtn').addEventListener('click', () => {
+      $('fdVertStage').innerHTML = '';
+      $('fdVertStage').appendChild(buildMalletSVG(-90));
+
+      fdVertSelection = null;
+      document.querySelectorAll('.fd-vert-img-btn').forEach(b => b.classList.remove('selected'));
+
+      setProgress(55);
+      showScreen('fdVertScreen');
+    });
+
+    document.querySelectorAll('.fd-vert-img-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Single select: deselect all, select this one
+        document.querySelectorAll('.fd-vert-img-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        fdVertSelection = btn.dataset.val;
+
+        // Auto-advance after short delay for visual feedback
+        setTimeout(() => {
+          goToFdHoriz();
+        }, 350);
+      });
+    });
+
+    function goToFdHoriz() {
+      $('fdHorizStage').innerHTML = '';
+      $('fdHorizStage').appendChild(buildMalletSVG(0));
+
+      fdHorizSelection = null;
+      document.querySelectorAll('.fd-horiz-img-btn').forEach(b => b.classList.remove('selected'));
+
+      setProgress(65);
+      showScreen('fdHorizScreen');
+    }
+
+    document.querySelectorAll('.fd-horiz-img-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.fd-horiz-img-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        fdHorizSelection = btn.dataset.val;
+
+        setTimeout(() => {
+          setProgress(75);
+          startQuestions();
+        }, 350);
+      });
+    });
+
+    function startQuestions() {
+      currentQuestionIdx = 0;
+      questionAnswers = {};
+      renderQuestion();
+      showScreen('questionScreen');
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestionIdx];
+      $('questionCard').innerHTML = `
+        <div class="step-tag">VAIHE 4 / 5 – KYSYMYS ${currentQuestionIdx + 1}/${questions.length}</div>
+        <p class="subtitle" style="font-size:47px; line-height:1.35; margin-bottom:24px;">${q.text}</p>
+        <div class="q-btn-row">
+          <button class="q-btn" id="qYes">KYLLÄ</button>
+          <button class="q-btn" id="qNo">EI</button>
+        </div>`;
+
+      $('qYes').addEventListener('click', () => answerQuestion('KYLLÄ'));
+      $('qNo').addEventListener('click', () => answerQuestion('EI'));
+    }
+
+    function answerQuestion(answer) {
+      questionAnswers[questions[currentQuestionIdx].id] = answer;
+      currentQuestionIdx++;
+
+      if (currentQuestionIdx < questions.length) {
+        setProgress(75 + (currentQuestionIdx / questions.length) * 15);
+        renderQuestion();
+      } else {
+        setProgress(92);
+        finishAll();
+      }
+    }
+
+    function fdVertLabel(selection) {
+      if (selection === 'ok') return 'EI SELVÄÄ POIKKEAVAA HAVAINTOA TÄSSÄ TEHTÄVÄSSÄ.';
+      if (selection === 'eso' || selection === 'exo') return 'EI SAMASSA LINJASSA';
+      if (selection === 'disappears') return 'TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI';
+      return '-';
+    }
+
+    function fdHorizLabel(selection) {
+      if (selection === 'ok') return 'EI SELVÄÄ POIKKEAVAA HAVAINTOA TÄSSÄ TEHTÄVÄSSÄ.';
+      if (selection === 'hyper' || selection === 'hypo') return 'EI SAMASSA LINJASSA';
+      if (selection === 'disappears') return 'TOINEN PALKKI KATOAA VÄHINTÄÄN HETKEKSI';
+      return '-';
+    }
+
+    function landoltExampleHTML() {
+      return `<div class="result-example landolt">${createLandoltSVG('right', 96, 'result-landolt').outerHTML}</div>`;
+    }
+
+    function printLandoltExampleHTML() {
+      return `<div class="ref-example landolt">${createLandoltSVG('right', 96, 'print-landolt').outerHTML}</div>`;
+    }
+
+    function malletExampleHTML(rotation) {
+      return `<div class="result-example">${buildMalletSVG(rotation).outerHTML}</div>`;
+    }
+
+    function printMalletExampleHTML(rotation) {
+      return `<div class="ref-example">${buildMalletSVG(rotation).outerHTML}</div>`;
+    }
+
+    function yn(v) {
+      return v ? 'KYLLÄ' : 'EI';
+    }
+
+    function visusLabel(v) {
+      return v === null ? 'ALLE 0.4' : v.toFixed(2).replace(/0$/, '');
+    }
+
+    function getVisusResultText() {
+      const bothGood =
+        visusRight !== null &&
+        visusLeft !== null &&
+        visusRight >= 1.0 &&
+        visusLeft >= 1.0;
+
+      if (bothGood) {
+        return 'TEHTÄVÄ EI ANTANUT VIITTEITÄ SELVÄSTÄ HAASTEESTA TARKKUUSHAVAINNOINNISSA. JOS KOET SILTI NÄKEMISEEN LIITTYVIÄ ONGELMIA, VARAA AIKA OPTIKOLLE TAI SILMÄLÄÄKÄRILLE.';
+      }
+
+      return 'TEHTÄVÄN PERUSTEELLA VOI OLLA HYÖDYLLISTÄ VARATA AIKA OPTIKOLLE TARKEMPAA ARVIOTA VARTEN.';
+    }
+
+    function shouldRecommend() {
+      const headacheYes = questionAnswers.headache === 'KYLLÄ';
+      const eyeFatigueYes = questionAnswers.eyeFatigue === 'KYLLÄ';
+      const readingIssueYes = questionAnswers.readingIssue === 'KYLLÄ';
+      // HUOM: fdVertSelection tulee PYSTYPALKKI-näytöstä, jossa poikkeama vastaa vaakasiirtymää.
+      // fdHorizSelection tulee VAAKAPALKKI-näytöstä, jossa poikkeama vastaa pystysiirtymää.
+      const fdHorizShift = fdVertSelection === 'eso' || fdVertSelection === 'exo';
+      const fdVertShift = fdHorizSelection === 'hyper' || fdHorizSelection === 'hypo';
+      const fdDisappears = fdVertSelection === 'disappears' || fdHorizSelection === 'disappears';
+
+      // Ennallaan säilyvät yksinään suosituksen laukaisevat kriteerit
+      if (visusRight === null || visusRight <= 0.8) return true;
+      if (visusLeft === null || visusLeft <= 0.8) return true;
+      if (fdVertShift) return true;
+      if (fdDisappears) return true;
+      if (eyeFatigueYes) return true;
+      if (readingIssueYes) return true;
+
+      // Kevennetty sääntö:
+      // - päänsärky yksinään ei laukaise suositusta
+      // - FD vaakasiirtymä yksinään ei laukaise suositusta
+      // - päänsärky + FD vaakasiirtymä yhdessä laukaisee suosituksen
+      if (headacheYes && fdHorizShift) return true;
+
+      return false;
+    }
+
+    function finishAll() {
+      const rec = shouldRecommend();
+
+      const summaryHtml = rec
+        ? `<div class="recommendation warn"><strong>YHTEENVETO</strong>TEHTÄVÄKOKONAISUUS SAATTAA ANTAA AIHETTA TARKEMPAAN ARVIOON. JOS HALUAT SELVITTÄÄ NÄKEMISTÄSI TARKEMMIN, VARAA AIKA OPTIKOLLE TAI SILMÄLÄÄKÄRILLE.<div style="margin-top:12px; font-size:18px; line-height:1.45; font-weight:700;">TEHTÄVÄKOKONAISUUS ON SUUNTAA ANTAVA ITSEARVIOINTI. SE EI OLE NÄÖNTUTKIMUS, EI ANNA DIAGNOOSIA EIKÄ KORVAA OPTIKON TAI SILMÄLÄÄKÄRIN ARVIOTA.</div></div>`
+        : `<div class="recommendation ok"><strong>HYVÄ TULOS!</strong>TESTIEN PERUSTEELLA NÄKEMISESSÄSI EI HAVAITTU POIKKEAMIA. SÄÄNNÖLLINEN NÄÖNTARKASTUS ON SILTI SUOSITELTAVAA.<div style="margin-top:12px; font-size:18px; line-height:1.45; font-weight:700;">TEHTÄVÄKOKONAISUUS ON SUUNTAA ANTAVA ITSEARVIOINTI. SE EI OLE NÄÖNTUTKIMUS, EI ANNA DIAGNOOSIA EIKÄ KORVAA OPTIKON TAI SILMÄLÄÄKÄRIN ARVIOTA.</div></div>`;
+
+      const h = `
+        <h1>TULOKSET</h1>
+
+        <div class="result-main">
+          <div class="result-left">
+            ${summaryHtml}
+
+            <div class="result-section">
+              <h3>PERUSTIEDOT</h3>
+              <p>${gender}, ${age} V.</p>
+            </div>
+
+            <div class="result-section">
+              <h3>TARKKUUSHAVAINTOTEHTÄVÄ</h3>
+              <div class="section-with-example">
+                <div><p>${getVisusResultText()}</p></div>
+                ${landoltExampleHTML()}
+              </div>
+            </div>
+
+            <div class="result-section">
+              <div class="section-top-example">
+                <h3>NÄKÖHAVAINTOTEHTÄVÄ – PYSTYPALKIT</h3>
+                ${malletExampleHTML(-90)}
+                <p>${fdVertLabel(fdVertSelection)}</p>
+              </div>
+            </div>
+
+            <div class="result-section">
+              <div class="section-top-example">
+                <h3>NÄKÖHAVAINTOTEHTÄVÄ – VAAKAPALKIT</h3>
+                ${malletExampleHTML(0)}
+                <p>${fdHorizLabel(fdHorizSelection)}</p>
+              </div>
+            </div>
+
+            <div class="result-section">
+              <h3>KYSELY</h3>
+              <p>PÄÄNSÄRKY VIIKOITTAIN: ${questionAnswers.headache}<br>SILMIEN VÄSYMINEN: ${questionAnswers.eyeFatigue}<br>RIVIT HYPPIVÄT LUKIESSA: ${questionAnswers.readingIssue}</p>
+            </div>
+          </div>
+
+          <div class="result-right">
+            <div class="qr-card">
+              <img src="${QR_CODE_DATA_URL}" alt="QR-KOODI AJANVARAUKSEEN" />
+              <div class="qr-title">AJANVARAUSLINKKI: SILMÄASEMAN OPTIKON URHEILUNÄÖNTUTKIMUS</div>
+            </div>
+
+            <div class="silmaasema-wrap">
+              <img src="${LOGO_URL}" alt="Silmäasema" style="width: min(100%, 300px); height: auto;" />
+            </div>
+
+            <div class="saving-status" id="savingStatus">TALLENNETAAN TULOKSIA…</div>
+          </div>
+        </div>
+
+        <div class="result-bottom">
+          <div>
+            <button class="btn-secondary" id="printBtn" style="font-size:24px; padding:16px 28px;">TULOSTA YHTEENVETO</button>
+          </div>
+          <div class="new-test-wrap">
+            <button class="btn-primary" id="newTestBtn" style="margin-top:0; min-width:340px;">ALOITA UUSI TUTKIMUS</button>
+          </div>
+        </div>
+      `;
+
+      $('resultCard').innerHTML = h;
+      setProgress(100);
+      showScreen('resultScreen');
+      $('newTestBtn').addEventListener('click', startNewStudyWithServerVersionCheck);
+      $('printBtn').addEventListener('click', printReferral);
+      saveToGoogleSheets();
+    }
+
+
+    function printReferral() {
+      const t = new Date();
+      const dateStr = t.getDate() + '.' + (t.getMonth() + 1) + '.' + t.getFullYear();
+      const rec = shouldRecommend();
+
+      const logoSrc = LOGO_URL;
+
+      const summaryHtml = rec
+        ? '<div class="ref-recommendation warn"><strong>YHTEENVETO</strong><span>TEHTÄVÄKOKONAISUUS SAATTAA ANTAA AIHETTA TARKEMPAAN ARVIOON. JOS HALUAT SELVITTÄÄ NÄKEMISTÄSI TARKEMMIN, VARAA AIKA OPTIKOLLE TAI SILMÄLÄÄKÄRILLE.</span><div style="margin-top:3mm; font-size:9pt; line-height:1.45; font-weight:700; text-transform:uppercase;">TEHTÄVÄKOKONAISUUS ON SUUNTAA ANTAVA ITSEARVIOINTI. SE EI OLE NÄÖNTUTKIMUS, EI ANNA DIAGNOOSIA EIKÄ KORVAA OPTIKON TAI SILMÄLÄÄKÄRIN ARVIOTA.</div></div>'
+        : '<div class="ref-recommendation ok"><strong>HYVÄ TULOS!</strong><span>TESTIEN PERUSTEELLA NÄKEMISESSÄSI EI HAVAITTU POIKKEAMIA. SÄÄNNÖLLINEN NÄÖNTARKASTUS ON SILTI SUOSITELTAVAA.</span><div style="margin-top:3mm; font-size:9pt; line-height:1.45; font-weight:700; text-transform:uppercase;">TEHTÄVÄKOKONAISUUS ON SUUNTAA ANTAVA ITSEARVIOINTI. SE EI OLE NÄÖNTUTKIMUS, EI ANNA DIAGNOOSIA EIKÄ KORVAA OPTIKON TAI SILMÄLÄÄKÄRIN ARVIOTA.</div></div>';
+
+      const referralHTML = `
+        <div class="ref-header">
+          <div class="ref-header-top">
+            <h1>YHTEENVETO NÄKÖHAVAINTOJEN ITSEARVIOINNISTA</h1>
+          </div>
+          <div class="ref-date">PVM: ${dateStr}</div>
+        </div>
+
+        <div class="ref-body">
+          <div class="ref-left">
+            ${summaryHtml}
+
+            <div class="ref-section">
+              <h3>PERUSTIEDOT</h3>
+              <p>${gender}, ${age} V.</p>
+            </div>
+
+            <div class="ref-section">
+              <h3>TARKKUUSHAVAINTOTEHTÄVÄ</h3>
+              <div class="ref-section-with-example">
+                <div><p>${getVisusResultText()}</p></div>
+                ${printLandoltExampleHTML()}
+              </div>
+            </div>
+
+            <div class="ref-section">
+              <div class="ref-section-top-example">
+                <h3>NÄKÖHAVAINTOTEHTÄVÄ — PYSTYPALKIT</h3>
+                ${printMalletExampleHTML(-90)}
+                <p>${fdVertLabel(fdVertSelection)}</p>
+              </div>
+            </div>
+
+            <div class="ref-section">
+              <div class="ref-section-top-example">
+                <h3>NÄKÖHAVAINTOTEHTÄVÄ — VAAKAPALKIT</h3>
+                ${printMalletExampleHTML(0)}
+                <p>${fdHorizLabel(fdHorizSelection)}</p>
+              </div>
+            </div>
+
+            <div class="ref-section">
+              <h3>KYSELY</h3>
+              <p>PÄÄNSÄRKY VIIKOITTAIN: ${questionAnswers.headache}<br>SILMIEN VÄSYMINEN: ${questionAnswers.eyeFatigue}<br>RIVIT HYPPIVÄT LUKIESSA: ${questionAnswers.readingIssue}</p>
+            </div>
+          </div>
+
+          <div class="ref-right">
+            <img src="${QR_CODE_DATA_URL}" alt="QR" />
+            <div class="ref-qr-text">AJANVARAUSLINKKI: SILMÄASEMAN OPTIKON URHEILUNÄÖNTUTKIMUS</div>
+            <img src="${QR_INFO_URL}" alt="QR" style="margin-top:3mm;" />
+            <div class="ref-qr-text">LISÄTIETOA SILMÄASEMAN OPTIKON URHEILUNÄÖNTUTKIMUKSESTA</div>
+          </div>
+        </div>
+
+        <div class="ref-footer">
+          <img src="${logoSrc}" alt="Silmäasema" />
+        </div>
+      `;
+
+      $('printReferral').innerHTML = referralHTML;
+
+      // Odotetaan, että koosteen kuvat (QR-koodit, logo) ovat latautuneet ennen tulostusta.
+      // Varmuuden vuoksi tulostetaan viimeistään 2 sekunnin kuluttua, vaikka jokin kuva ei latautuisi.
+      const imgs = Array.from($('printReferral').querySelectorAll('img'));
+      const imagesReady = Promise.all(imgs.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.addEventListener('load', resolve, { once: true });
+          img.addEventListener('error', resolve, { once: true });
+        });
+      }));
+      const timeoutFallback = new Promise(resolve => setTimeout(resolve, 2000));
+
+      Promise.race([imagesReady, timeoutFallback]).then(() => window.print());
+    }
+
+    function resetAll() {
+      gender = '';
+      age = 0;
+      visusRight = null;
+      visusLeft = null;
+      fdVertSelection = null;
+      fdHorizSelection = null;
+      questionAnswers = {};
+      currentQuestionIdx = 0;
+
+      document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('selected'));
+      $('ageInput').value = '';
+      ageString = '';
+      updateAgeDisplay();
+      $('genderError').textContent = '';
+      $('ageError').textContent = '';
+
+      setProgress(0);
+      showScreen('welcomeScreen');
+    }
+
+    function saveToGoogleSheets() {
+      const t = new Date();
+      const payload = {
+        pvm: t.getDate() + '.' + (t.getMonth() + 1) + '.' + t.getFullYear(),
+        sukupuoli: gender,
+        ika: String(age),
+        visus_oikea: visusLabel(visusRight),
+        visus_vasen: visusLabel(visusLeft),
+        // PYSTYPALKKI-näytön eso/exo-valinta vastaa FD-vaakasiirtymää.
+        // VAAKAPALKKI-näytön hyper/hypo-valinta vastaa FD-pystysiirtymää.
+        fd_pysty_siirtyma: yn(fdHorizSelection === 'hyper' || fdHorizSelection === 'hypo'),
+        fd_vaaka_siirtyma: yn(fdVertSelection === 'eso' || fdVertSelection === 'exo'),
+        fd_pystypalkit_katoaa: yn(fdVertSelection === 'disappears'),
+        fd_vaakapalkit_katoaa: yn(fdHorizSelection === 'disappears'),
+        paansarky: questionAnswers.headache || '',
+        silmien_vasyminen: questionAnswers.eyeFatigue || '',
+        rivit_hyppivat: questionAnswers.readingIssue || '',
+        suositus: shouldRecommend() ? 'KYLLÄ' : 'EI',
+        toimipiste: SITE_NAME
+      };
+
+      if (!/^https:\/\/script\.google\.com\//.test(APPS_SCRIPT_URL)) {
+        const el = $('savingStatus');
+        if (el) el.textContent = 'TALLENNUS EI KÄYTÖSSÄ – APPS SCRIPT -OSOITE PUUTTUU.';
+        return;
+      }
+
+      const formBody = new URLSearchParams(payload).toString();
+
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formBody
+      })
+      .then(() => {
+        const el = $('savingStatus');
+        if (el) el.textContent = 'TULOKSET TALLENNETTU ✓';
+      })
+      .catch(() => {
+        const el = $('savingStatus');
+        if (el) el.textContent = 'TALLENNUSVIRHE – TARKISTA YHTEYS.';
+      });
+    }
+
+    loadCal();
+    showScreen('welcomeScreen');
+    setProgress(0);
+  </script>
+
+  <!-- TULOSTETTAVA KOOSTE -->
+  <div id="printReferral"></div>
+</body>
+</html>
